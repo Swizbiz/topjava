@@ -7,10 +7,9 @@
 <body>
 <h3><a href="index.html">Home</a></h3>
 <hr>
-<table border="1">
+<table border="3">
     <thead>
     <tr>
-        <th>Id</th>
         <th>Date and time</th>
         <th>Description</th>
         <th>Calories</th>
@@ -19,7 +18,6 @@
     </thead>
     <c:forEach var="meal" items="${meals}">
         <tr style="${meal.excess ? "color:#ff0000" : "color:#00ff00"}">
-            <td><c:out value="${meal.id}"/></td>
             <td><c:out value="${meal.dateTime.format(formatter)}"/></td>
             <td><c:out value="${meal.description}"/></td>
             <td><c:out value="${meal.calories}"/></td>

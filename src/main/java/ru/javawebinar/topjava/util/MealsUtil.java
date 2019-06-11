@@ -6,7 +6,6 @@ import ru.javawebinar.topjava.model.MealTo;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.*;
-import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.stream.Collector;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -18,11 +17,11 @@ public class MealsUtil {
 
     public static void main(String[] args) {}
 
-    public static CopyOnWriteArrayList<MealTo> getAll(List<Meal> mealList, int caloriesPerDay) {
-        return new CopyOnWriteArrayList<>(getFilteredWithExcessInOnePass(mealList, LocalTime.MIN, LocalTime.MAX, caloriesPerDay));
+    public static List<MealTo> getAll(Collection<Meal> mealList, int caloriesPerDay) {
+        return getFilteredWithExcess(mealList, LocalTime.MIN, LocalTime.MAX, caloriesPerDay);
     }
 
-    public static List<MealTo> getFilteredWithExcess(List<Meal> meals, LocalTime startTime, LocalTime endTime, int caloriesPerDay) {
+    public static List<MealTo> getFilteredWithExcess(Collection<Meal> meals, LocalTime startTime, LocalTime endTime, int caloriesPerDay) {
         Map<LocalDate, Integer> caloriesSumByDate = meals.stream()
                 .collect(
                         Collectors.groupingBy(Meal::getDate, Collectors.summingInt(Meal::getCalories))
@@ -95,8 +94,6 @@ public class MealsUtil {
     }
 
     private static MealTo createWithExcess(Meal meal, boolean excess) {
-        MealTo newMealTo = new MealTo(meal.getDateTime(), meal.getDescription(), meal.getCalories(), excess);
-        newMealTo.setId(meal.getId());
-        return newMealTo;
+        return new MealTo(meal.getId() ,meal.getDateTime(), meal.getDescription(), meal.getCalories(), excess);
     }
 }
