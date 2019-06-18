@@ -8,7 +8,6 @@ import ru.javawebinar.topjava.model.Meal;
 import ru.javawebinar.topjava.service.MealService;
 import ru.javawebinar.topjava.to.MealTo;
 import ru.javawebinar.topjava.util.MealsUtil;
-import ru.javawebinar.topjava.web.SecurityUtil;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -34,10 +33,12 @@ public class MealRestController {
     public List<MealTo> getAll(LocalDate startDate, LocalDate endDate, LocalTime startTime, LocalTime endTime) {
         if (startDate == null) startDate = LocalDate.MIN;
         if (endDate == null) endDate = LocalDate.MAX;
+        log.info("getAll with filter by day");
+        List<Meal> mealListFilteredByDays = service.getAllBetweenDays(authUserId(), startDate, endDate);
         if (startTime == null) startTime = LocalTime.MIN;
         if (endTime == null) endTime = LocalTime.MAX;
-        log.info("getAll with filter");
-        return MealsUtil.getFilteredWithExcess(service.getAll(authUserId()), authUserCaloriesPerDay(), startDate, endDate, startTime, endTime);
+        log.info("getAll with filter by time");
+        return MealsUtil.getFilteredWithExcess(mealListFilteredByDays, authUserCaloriesPerDay(), startTime, endTime);
     }
 
     public Meal get(int id) {

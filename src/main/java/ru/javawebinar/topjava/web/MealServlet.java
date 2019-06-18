@@ -13,6 +13,8 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
@@ -78,8 +80,6 @@ public class MealServlet extends HttpServlet {
                 request.getRequestDispatcher("/mealForm.jsp").forward(request, response);
                 break;
             case "reset":
-                log.info("getAll");
-                request.setAttribute("meals", controller.getAll());
                 response.sendRedirect("meals");
                 break;
             case "all":
@@ -88,31 +88,34 @@ public class MealServlet extends HttpServlet {
                 String startDate = request.getParameter("startDate");
                 if (startDate != null && !startDate.isEmpty()) {
                     localStartDate = LocalDate.parse(startDate);
-                    request.setAttribute("startDate", localStartDate);
+//                    request.setAttribute("startDate", localStartDate);
                 }
 
                 LocalDate localEndDate = null;
                 String endDate = request.getParameter("endDate");
                 if (endDate != null && !endDate.isEmpty()) {
                     localEndDate = LocalDate.parse(endDate);
-                    request.setAttribute("endDate", localEndDate);
+//                    request.setAttribute("endDate", localEndDate);
                 }
 
                 LocalTime localStartTime = null;
                 String startTime = request.getParameter("startTime");
                 if (startTime != null && !startTime.isEmpty()) {
                     localStartTime = LocalTime.parse(startTime);
-                    request.setAttribute("startTime", localStartTime);
+//                    request.setAttribute("startTime", localStartTime);
                 }
 
                 LocalTime localEndTime = null;
                 String endTime = request.getParameter("endTime");
                 if (endTime != null && !endTime.isEmpty()) {
                     localEndTime = LocalTime.parse(endTime);
-                    request.setAttribute("endTime", localEndTime);
+//                    request.setAttribute("endTime", localEndTime);
                 }
 
-                request.setAttribute("meals", controller.getAll(localStartDate, localEndDate, localStartTime, localEndTime));
+                if (localStartDate == null && localEndDate == null && localStartTime == null && localEndTime == null)
+                    request.setAttribute("meals", controller.getAll());
+                else
+                    request.setAttribute("meals", controller.getAll(localStartDate, localEndDate, localStartTime, localEndTime));
                 request.getRequestDispatcher("/meals.jsp").forward(request, response);
         }
     }
@@ -120,5 +123,21 @@ public class MealServlet extends HttpServlet {
     private int getId(HttpServletRequest request) {
         String paramId = Objects.requireNonNull(request.getParameter("id"));
         return Integer.parseInt(paramId);
+    }
+
+    private <T> T getParameter(HttpServletRequest request, String parameterName, Class<T> clazz) {
+        T ret = null;
+        String parameter = request.getParameter(parameterName);
+        if (parameter != null && !parameter.isEmpty()) {
+            try {
+                Method parse = clazz.getDeclaredMethod("parse", CharSequence.class);
+                parse.setAccessible(true);
+                ret = (T) parse.invoke(parameter);
+                request.setAttribute(parameterName, ret);
+            } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException e) {
+                e.printStackTrace();
+            }
+        }
+        return ret;
     }
 }

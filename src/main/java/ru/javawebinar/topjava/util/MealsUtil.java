@@ -36,11 +36,6 @@ public class MealsUtil {
         return getFilteredWithExcess(meals, caloriesPerDay, meal -> DateTimeUtil.isBetween(meal.getTime(), startTime, endTime));
     }
 
-    public static List<MealTo> getFilteredWithExcess(Collection<Meal> meals, int caloriesPerDay, LocalDate startDate, LocalDate endDate, LocalTime startTime, LocalTime endTime) {
-        return getFilteredWithExcess(meals, caloriesPerDay,
-                meal -> DateTimeUtil.isBetween(meal.getDate(), startDate, endDate) && DateTimeUtil.isBetween(meal.getTime(), startTime, endTime));
-    }
-
     private static List<MealTo> getFilteredWithExcess(Collection<Meal> meals, int caloriesPerDay, Predicate<Meal> filter) {
         Map<LocalDate, Integer> caloriesSumByDate = meals.stream()
                 .collect(
@@ -55,6 +50,6 @@ public class MealsUtil {
     }
 
     private static MealTo createWithExcess(Meal meal, boolean excess) {
-        return new MealTo(meal.getId(), meal.getDateTime(), meal.getDescription(), meal.getCalories(), excess, meal.getUserId());
+        return new MealTo(meal.getId(), meal.getDateTime(), meal.getDescription(), meal.getCalories(), excess);
     }
 }
