@@ -36,8 +36,8 @@ public class MealServlet extends HttpServlet {
 
     @Override
     public void destroy() {
-        super.destroy();
         appCtx.close();
+        super.destroy();
     }
 
     @Override
@@ -79,11 +79,8 @@ public class MealServlet extends HttpServlet {
                 request.setAttribute("meal", meal);
                 request.getRequestDispatcher("/mealForm.jsp").forward(request, response);
                 break;
-            case "reset":
-                response.sendRedirect("meals");
-                break;
-            case "all":
-            default:
+            case "filter":
+                log.info("filter");
                 LocalDate localStartDate = null;
                 String startDate = request.getParameter("startDate");
                 if (startDate != null && !startDate.isEmpty()) {
@@ -112,10 +109,13 @@ public class MealServlet extends HttpServlet {
 //                    request.setAttribute("endTime", localEndTime);
                 }
 
-                if (localStartDate == null && localEndDate == null && localStartTime == null && localEndTime == null)
-                    request.setAttribute("meals", controller.getAll());
-                else
-                    request.setAttribute("meals", controller.getAll(localStartDate, localEndDate, localStartTime, localEndTime));
+                request.setAttribute("meals", controller.getAll(localStartDate, localEndDate, localStartTime, localEndTime));
+                response.sendRedirect("meals");
+                break;
+            case "all":
+            default:
+                log.info("filter");
+                request.setAttribute("meals", controller.getAll());
                 request.getRequestDispatcher("/meals.jsp").forward(request, response);
         }
     }

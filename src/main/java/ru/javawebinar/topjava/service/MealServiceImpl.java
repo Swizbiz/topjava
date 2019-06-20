@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import ru.javawebinar.topjava.model.Meal;
 import ru.javawebinar.topjava.repository.MealRepository;
+import ru.javawebinar.topjava.util.DateTimeUtil;
 import ru.javawebinar.topjava.util.exception.NotFoundException;
 
 import java.time.LocalDate;
@@ -48,6 +49,6 @@ public class MealServiceImpl implements MealService {
 
     @Override
     public List<Meal> getAllBetweenDays(int userId, LocalDate startDate, LocalDate endDate) {
-        return repository.getAllBetweenDays(userId, startDate, endDate);
+        return repository.getAllBetweenDays(userId, meal -> DateTimeUtil.isBetween(meal.getDate(), startDate, endDate));
     }
 }

@@ -25,13 +25,13 @@
     <br><br>
 
     <form method="get" action="meals">
-        <input hidden name="action">
-        From date: <input type="date" name="startDate" value="${startDate}">
-        To date: <input type="date" name="endDate" value="${endDate}"> <br>
-        From time: <input type="time" name="startTime" value="${startTime}">
-        To time: <input type="time" name="endTime" value="${endTime}"> <br>
+        <input type="hidden" name="action" value="filter">
+        From date: <input type="date" name="startDate" value="">
+        To date: <input type="date" name="endDate" value=""> <br>
+        From time: <input type="time" name="startTime" value="">
+        To time: <input type="time" name="endTime" value=""> <br>
         <button type="submit">Filter</button>
-        <a href="meals?action=reset"><input type="button" value="Reset"></a>
+        <a href="meals"><input type="button" value="Reset"></a>
     </form>
     <table border="1" cellpadding="8" cellspacing="0">
         <thead>

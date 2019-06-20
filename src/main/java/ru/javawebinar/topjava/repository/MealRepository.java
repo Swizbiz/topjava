@@ -2,8 +2,8 @@ package ru.javawebinar.topjava.repository;
 
 import ru.javawebinar.topjava.model.Meal;
 
-import java.time.LocalDate;
 import java.util.List;
+import java.util.function.Predicate;
 
 public interface MealRepository {
     Meal save(Meal meal, int userId);
@@ -16,5 +16,5 @@ public interface MealRepository {
 
     List<Meal> getAll(int userId);
 
-    List<Meal> getAllBetweenDays(int userId, LocalDate startDate, LocalDate endDate);
+    List<Meal> getAllBetweenDays(int userId, Predicate<Meal> filter);
 }
