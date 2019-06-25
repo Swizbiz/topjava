@@ -17,7 +17,7 @@ import java.util.Collection;
 
 import static ru.javawebinar.topjava.UserTestData.ADMIN;
 
-@ContextConfiguration("classpath:spring/spring-app.xml")
+@ContextConfiguration("classpath:spring/spring-app-test.xml")
 @RunWith(SpringRunner.class)
 public class InMemoryAdminRestControllerSpringTest {
 
@@ -25,7 +25,7 @@ public class InMemoryAdminRestControllerSpringTest {
     private AdminRestController controller;
 
 
-    @Qualifier("inMemoryBaseRepository")
+    @Autowired
     private InMemoryUserRepository repository;
 
     @Before

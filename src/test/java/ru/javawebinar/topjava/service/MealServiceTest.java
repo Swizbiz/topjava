@@ -14,7 +14,6 @@ import ru.javawebinar.topjava.util.exception.NotFoundException;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.Collections;
 import java.util.List;
 
 import static ru.javawebinar.topjava.MealTestData.*;
@@ -44,14 +43,14 @@ public class MealServiceTest {
 
     @Test(expected = NotFoundException.class)
     public void getNotFound() {
-        service.get(MEAL4.getId(), USER_ID);
+        service.get(MEAL7.getId(), USER_ID);
     }
 
     @Test
     public void getBetweenDateTimes() {
         List<Meal> all = service.getBetweenDateTimes(
-                LocalDateTime.of(2019, 6, 22, 8, 0, 0),
-                LocalDateTime.of(2019, 6, 22, 13, 0, 0),
+                LocalDateTime.of(2015, 5, 30, 8, 0, 0),
+                LocalDateTime.of(2015, 5, 30, 19, 0, 0),
                 USER_ID);
         assertMatch(all, MEAL2, MEAL1);
     }
@@ -59,49 +58,55 @@ public class MealServiceTest {
     @Test
     public void getBetweenDates() {
         List<Meal> all = service.getBetweenDates(
-                LocalDate.of(2020, 6, 22),
-                LocalDate.of(2020, 6, 22),
+                LocalDate.of(2015, 5, 31),
+                LocalDate.of(2015, 5, 31),
                 USER_ID);
-        assertMatch(all, Collections.emptyList());
+        assertMatch(all, MEAL6, MEAL5, MEAL4);
     }
 
     @Test
     public void getAll() {
         List<Meal> all = service.getAll(USER_ID);
-        assertMatch(all, MEAL3, MEAL2, MEAL1);
+        assertMatch(all, MEAL6, MEAL5, MEAL4, MEAL3, MEAL2, MEAL1);
     }
 
     @Test(expected = NotFoundException.class)
     public void deleteStrange() throws Exception {
-        service.delete(MEAL5.getId(), USER_ID);
+        service.delete(MEAL5.getId(), ADMIN_ID);
     }
 
     @Test
     public void delete() {
-        service.delete(MEAL1.getId(), USER_ID);
+        service.delete(MEAL4.getId(), USER_ID);
+        List<Meal> all = service.getAll(USER_ID);
+        assertMatch(all, MEAL6, MEAL5, MEAL3, MEAL2, MEAL1);
     }
 
     @Test(expected = NotFoundException.class)
     public void updateStrange() throws Exception {
-        Meal newMeal = new Meal(MEAL6.getId(), LocalDateTime.now(), "dinner", 1555);
+        Meal newMeal = new Meal(MEAL8.getId(), LocalDateTime.now(), "dinner", 1555);
         service.update(newMeal, USER_ID);
     }
 
     @Test
     public void update() {
-        Meal newMeal = new Meal(MEAL6);
+        Meal newMeal = new Meal(MEAL8);
         service.update(newMeal, ADMIN_ID);
+        List<Meal> all = service.getAll(ADMIN_ID);
+        assertMatch(all, newMeal, MEAL7);
     }
 
     @Test(expected = DuplicateKeyException.class)
-    public void createStrange() {
-        Meal newMeal = new Meal(null, LocalDateTime.of(2019, 6, 23, 17, 0, 0), "dinner", 1555);
-        service.create(newMeal, ADMIN_ID);
+    public void createDuplicateDateTime() {
+        Meal newMeal = new Meal(null, LocalDateTime.of(2015, 5, 30, 17, 0, 0), "dinner", 1555);
+        service.create(newMeal, USER_ID);
     }
 
     @Test
     public void create() {
-        Meal newMeal = new Meal(null, LocalDateTime.of(2019, 6, 23, 16, 0, 0), "dinner", 555);
-        service.create(newMeal, ADMIN_ID);
+        Meal newMeal = new Meal(null, LocalDateTime.of(2015, 5, 31, 16, 0, 0), "dinner", 555);
+        service.create(newMeal, USER_ID);
+        List<Meal> all = service.getAll(USER_ID);
+        assertMatch(all, MEAL6, MEAL5, newMeal, MEAL4, MEAL3, MEAL2, MEAL1);
     }
 }
