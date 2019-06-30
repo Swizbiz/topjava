@@ -1,11 +1,10 @@
 package ru.javawebinar.topjava.service;
 
 import org.junit.AfterClass;
-import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
-import org.junit.rules.TestWatcher;
+import org.junit.rules.Stopwatch;
 import org.junit.runner.Description;
 import org.junit.runner.RunWith;
 import org.slf4j.Logger;
@@ -34,7 +33,6 @@ import static ru.javawebinar.topjava.UserTestData.*;
 @Sql(scripts = "classpath:db/populateDB.sql", config = @SqlConfig(encoding = "UTF-8"))
 public class MealServiceTest {
 
-    private long startTime;
     private static StringBuilder result = new StringBuilder();
     private static final Logger log = LoggerFactory.getLogger(MealServiceTest.class);
 
@@ -45,23 +43,19 @@ public class MealServiceTest {
     public final ExpectedException exception = ExpectedException.none();
 
     @Rule
-    public TestWatcher watcher = new TestWatcher() {
+    public Stopwatch watcher = new Stopwatch() {
         @Override
-        protected void finished(Description description) {
-            String s = String.format("%s running for %d ms%n", description.getClassName(), TimeUnit.NANOSECONDS.toMicros(System.nanoTime() - startTime));
+        protected void finished(long nanos, Description description) {
+            String s = String.format("Test \"%s\" finished, spent %d ms",
+                    description.getMethodName(), TimeUnit.NANOSECONDS.toMillis(nanos));
             log.info(s);
-            result.append(s);
+            result.append(s).append("\n");
         }
     };
 
-    @Before
-    public void start() {
-        startTime = System.nanoTime();
-    }
-
     @AfterClass
     public static void result() {
-        log.info("Results tests: \n" + result);
+        log.info(String.format("%n%n%nTEST RESULTS: %n%s%n", result));
     }
 
     @Test
