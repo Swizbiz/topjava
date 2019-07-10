@@ -16,13 +16,13 @@ import java.util.List;
 
 public abstract class JdbcMealRepository implements MealRepository {
 
-    protected static final RowMapper<Meal> ROW_MAPPER = BeanPropertyRowMapper.newInstance(Meal.class);
+    private static final RowMapper<Meal> ROW_MAPPER = BeanPropertyRowMapper.newInstance(Meal.class);
 
-    protected final JdbcTemplate jdbcTemplate;
+    private final JdbcTemplate jdbcTemplate;
 
-    protected final NamedParameterJdbcTemplate namedParameterJdbcTemplate;
+    private final NamedParameterJdbcTemplate namedParameterJdbcTemplate;
 
-    protected final SimpleJdbcInsert insertMeal;
+    private final SimpleJdbcInsert insertMeal;
 
     @Autowired
     public JdbcMealRepository(JdbcTemplate jdbcTemplate, NamedParameterJdbcTemplate namedParameterJdbcTemplate) {
@@ -35,9 +35,13 @@ public abstract class JdbcMealRepository implements MealRepository {
     }
 
     @Override
-    public abstract Meal save(Meal meal, int userId);
-
-    protected Meal save(Meal meal, MapSqlParameterSource map) {
+    public Meal save(Meal meal, int userId) {
+        MapSqlParameterSource map = new MapSqlParameterSource()
+                .addValue("id", meal.getId())
+                .addValue("description", meal.getDescription())
+                .addValue("calories", meal.getCalories())
+                .addValue("date_time", convertDateTime(meal.getDateTime()))
+                .addValue("user_id", userId);
         if (meal.isNew()) {
             Number newId = insertMeal.executeAndReturnKey(map);
             meal.setId(newId.intValue());
@@ -72,5 +76,11 @@ public abstract class JdbcMealRepository implements MealRepository {
     }
 
     @Override
-    public abstract List<Meal> getBetween(LocalDateTime startDate, LocalDateTime endDate, int userId);
+    public List<Meal> getBetween(LocalDateTime startDate, LocalDateTime endDate, int userId) {
+        return jdbcTemplate.query(
+                "SELECT * FROM meals WHERE user_id=?  AND date_time BETWEEN  ? AND ? ORDER BY date_time DESC",
+                ROW_MAPPER, userId, convertDateTime(startDate), convertDateTime(endDate));
+    }
+
+    protected abstract <T> T convertDateTime(LocalDateTime dateTime);
 }

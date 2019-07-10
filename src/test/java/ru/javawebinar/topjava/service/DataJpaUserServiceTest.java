@@ -7,6 +7,8 @@ import ru.javawebinar.topjava.Profiles;
 import ru.javawebinar.topjava.UserTestData;
 import ru.javawebinar.topjava.model.User;
 
+import java.util.Collections;
+
 import static org.assertj.core.api.Assertions.assertThat;
 
 
@@ -15,6 +17,12 @@ public class DataJpaUserServiceTest extends UserServiceTest {
     @Test
     public void getWithMeal() {
         User user = service.getWithMeal(UserTestData.USER_ID);
-        assertThat(user.getMeals()).containsAll(MealTestData.MEALS);
+        assertThat(user.getMeals()).containsOnlyElementsOf(MealTestData.MEALS);
+    }
+
+    @Test
+    public void getWithoutMeal() {
+        User user = service.getWithMeal(UserTestData.STUB_USER_ID);
+        assertThat(user.getMeals()).containsOnlyElementsOf(Collections.emptyList());
     }
 }

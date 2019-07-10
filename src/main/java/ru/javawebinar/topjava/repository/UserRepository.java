@@ -20,5 +20,7 @@ public interface UserRepository {
     List<User> getAll();
 
     // use only for DataJpa
-    User getWithMeal(int id);
+    default User getWithMeal(int id) {
+        return null;
+    }
 }

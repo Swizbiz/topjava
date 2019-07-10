@@ -22,5 +22,7 @@ public interface MealRepository {
     List<Meal> getBetween(LocalDateTime startDate, LocalDateTime endDate, int userId);
 
     //only for DataJpa
-    List<Meal> getWithUser(int userId);
+    default List<Meal> getWithUser(int userId) {
+        return null;
+    }
 }

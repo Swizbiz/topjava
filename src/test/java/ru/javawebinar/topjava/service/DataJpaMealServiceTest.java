@@ -8,14 +8,14 @@ import ru.javawebinar.topjava.model.Meal;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static ru.javawebinar.topjava.UserTestData.ADMIN_ID;
+import static ru.javawebinar.topjava.UserTestData.*;
 
 
 @ActiveProfiles(Profiles.DATAJPA)
 public class DataJpaMealServiceTest extends MealServiceTest {
     @Test
-    public void getWithMeal() {
+    public void getWithUser() {
         List<Meal> mealList = service.getWithUser(ADMIN_ID);
-        mealList.forEach(m -> assertThat(m.getUser().getId()).isEqualTo(ADMIN_ID));
+        mealList.forEach(m -> assertThat(m.getUser()).isEqualTo(ADMIN));
     }
 }
