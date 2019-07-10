@@ -62,4 +62,9 @@ public class JpaMealRepository implements MealRepository {
                 .setParameter("startDate", startDate)
                 .setParameter("endDate", endDate).getResultList();
     }
+
+    @Override
+    public List<Meal> getWithUser(int userId) {
+        return null;
+    }
 }

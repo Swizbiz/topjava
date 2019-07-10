@@ -56,4 +56,8 @@ public class MealService {
         Assert.notNull(meal, "meal must not be null");
         return repository.save(meal, userId);
     }
+
+    public List<Meal> getWithUser(int userId) {
+        return repository.getWithUser(userId);
+    }
 }

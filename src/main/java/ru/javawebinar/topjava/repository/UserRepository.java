@@ -18,4 +18,7 @@ public interface UserRepository {
     User getByEmail(String email);
 
     List<User> getAll();
+
+    // use only for DataJpa
+    User getWithMeal(int id);
 }

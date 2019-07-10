@@ -20,4 +20,7 @@ public interface MealRepository {
 
     // ORDERED dateTime desc
     List<Meal> getBetween(LocalDateTime startDate, LocalDateTime endDate, int userId);
+
+    //only for DataJpa
+    List<Meal> getWithUser(int userId);
 }
