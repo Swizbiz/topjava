@@ -1,6 +1,5 @@
 package ru.javawebinar.topjava;
 
-import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 import ru.javawebinar.topjava.model.Role;
 import ru.javawebinar.topjava.model.User;
@@ -16,8 +15,7 @@ import java.util.List;
 
 public class SpringMain {
     public static void main(String[] args) {
-        try {
-            ClassPathXmlApplicationContext appCtx = new ClassPathXmlApplicationContext();
+        try (ClassPathXmlApplicationContext appCtx = new ClassPathXmlApplicationContext()) {
             appCtx.getEnvironment().setActiveProfiles(Profiles.getActiveDbProfile(), Profiles.DATAJPA);
             appCtx.setConfigLocations("spring/spring-app.xml", "spring/spring-db.xml");
             appCtx.refresh();
@@ -32,7 +30,6 @@ public class SpringMain {
                             LocalDate.of(2015, Month.MAY, 30), LocalTime.of(7, 0),
                             LocalDate.of(2015, Month.MAY, 31), LocalTime.of(11, 0));
             filteredMealsWithExcess.forEach(System.out::println);
-            appCtx.close();
         } catch (Exception e) {
             e.printStackTrace();
         }

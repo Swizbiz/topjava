@@ -5,9 +5,7 @@ import org.springframework.test.context.ActiveProfiles;
 import ru.javawebinar.topjava.Profiles;
 import ru.javawebinar.topjava.model.Meal;
 
-import java.util.List;
-
-import static org.assertj.core.api.Assertions.assertThat;
+import static ru.javawebinar.topjava.MealTestData.*;
 import static ru.javawebinar.topjava.UserTestData.*;
 
 
@@ -15,7 +13,8 @@ import static ru.javawebinar.topjava.UserTestData.*;
 public class DataJpaMealServiceTest extends MealServiceTest {
     @Test
     public void getWithUser() {
-        List<Meal> mealList = service.getWithUser(ADMIN_ID);
-        mealList.forEach(m -> assertThat(m.getUser()).isEqualTo(ADMIN));
+        Meal meal = service.getWithUser(ADMIN_MEAL_ID, ADMIN_ID);
+        assertMatch(meal, ADMIN_MEAL1);
+        assertMatch(meal.getUser(), ADMIN);
     }
 }

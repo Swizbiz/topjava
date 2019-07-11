@@ -21,6 +21,6 @@ public interface UserRepository {
 
     // use only for DataJpa
     default User getWithMeal(int id) {
-        return null;
+        throw new UnsupportedOperationException();
     }
 }
