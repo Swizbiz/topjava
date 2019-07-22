@@ -50,71 +50,70 @@ public class JdbcUserRepository implements UserRepository {
             Number newKey = insertUser.executeAndReturnKey(parameterSource);
             int newId = newKey.intValue();
             user.setId(newId);
-            List<Role> roles = new ArrayList<>(user.getRoles());
-            jdbcTemplate.batchUpdate("INSERT INTO user_roles VALUES (?, ?)", new BatchPreparedStatementSetter() {
-                @Override
-                public void setValues(PreparedStatement ps, int i) throws SQLException {
-                    ps.setInt(1, newId);
-                    ps.setString(2, roles.get(i).name());
-                }
-
-                @Override
-                public int getBatchSize() {
-                    return roles.size();
-                }
-            });
         } else if (namedParameterJdbcTemplate.update(
                 "UPDATE users SET name=:name, email=:email, password=:password, " +
                         "registered=:registered, enabled=:enabled, calories_per_day=:caloriesPerDay WHERE id=:id", parameterSource) == 0) {
             return null;
         }
+        int id = user.getId();
+        jdbcTemplate.update("DELETE FROM user_roles WHERE user_id=?", id);
+        List<Role> roles = new ArrayList<>(user.getRoles());
+        jdbcTemplate.batchUpdate("INSERT INTO user_roles VALUES (?, ?)", new BatchPreparedStatementSetter() {
+            @Override
+            public void setValues(PreparedStatement ps, int i) throws SQLException {
+                ps.setInt(1, id);
+                ps.setString(2, roles.get(i).name());
+            }
+
+            @Override
+            public int getBatchSize() {
+                return roles.size();
+            }
+        });
         return user;
     }
 
     @Override
     @Transactional
     public boolean delete(int id) {
-        return jdbcTemplate.update("DELETE FROM user_roles WHERE user_id=?", id) != 0 && jdbcTemplate.update("DELETE FROM users WHERE id=?", id) != 0;
+        return jdbcTemplate.update("DELETE FROM users WHERE id=?", id) != 0;
     }
 
     @Override
     public User get(int id) {
         List<User> users = jdbcTemplate.query("SELECT * FROM users WHERE id=?", ROW_MAPPER, id);
-        users.forEach(this::setRolesToUser);
-        return DataAccessUtils.singleResult(users);
+        User user = DataAccessUtils.singleResult(users);
+        if (user != null) {
+            List<Role> roles = jdbcTemplate.queryForList("SELECT role FROM user_roles WHERE user_id=?", new Object[]{id}, Role.class);
+            user.setRoles(roles);
+        }
+        return user;
     }
 
     @Override
     public User getByEmail(String email) {
 //        return jdbcTemplate.queryForObject("SELECT * FROM users WHERE email=?", ROW_MAPPER, email);
         List<User> users = jdbcTemplate.query("SELECT * FROM users WHERE email=?", ROW_MAPPER, email);
-        users.forEach(this::setRolesToUser);
-        return DataAccessUtils.singleResult(users);
+        User user = DataAccessUtils.singleResult(users);
+        if (user != null) {
+            List<Role> roles = jdbcTemplate.queryForList("SELECT role FROM user_roles WHERE user_id=?", new Object[]{user.getId()}, Role.class);
+            user.setRoles(roles);
+        }
+        return user;
     }
 
     @Override
     public List<User> getAll() {
         List<User> users = jdbcTemplate.query("SELECT * FROM users ORDER BY name, email", ROW_MAPPER);
         SqlRowSet sqlRowSetRoles = jdbcTemplate.queryForRowSet("SELECT * FROM user_roles");
-        Map<Integer, Set<Role>> roles = mapOfRoles(sqlRowSetRoles);
+        Map<Integer, Set<Role>> roles = new HashMap<>();
+        while (sqlRowSetRoles.next()) {
+            int id = sqlRowSetRoles.getInt("user_id");
+            Role role = Role.valueOf(sqlRowSetRoles.getString("role"));
+            roles.putIfAbsent(id, new HashSet<>());
+            roles.get(id).add(role);
+        }
         users.forEach(user -> user.setRoles(roles.getOrDefault(user.getId(), Collections.emptySet())));
         return users;
-    }
-
-    private void setRolesToUser(User user) {
-        SqlRowSet sqlRowSet = jdbcTemplate.queryForRowSet("SELECT * FROM user_roles WHERE user_id=?", user.getId());
-        Map<Integer, Set<Role>> roles = mapOfRoles(sqlRowSet);
-        user.setRoles(roles.getOrDefault(user.getId(), Collections.emptySet()));
-    }
-
-    private Map<Integer, Set<Role>> mapOfRoles(SqlRowSet sqlRowSet) {
-        Map<Integer, Set<Role>> rolesMap = new HashMap<>();
-        while (sqlRowSet.next()) {
-            int id = sqlRowSet.getInt("user_id");
-            Role role = Role.valueOf(sqlRowSet.getString("role"));
-            rolesMap.putIfAbsent(id, new HashSet<>());
-            rolesMap.get(id).add(role);
-        }
-        return rolesMap;
     }
 }

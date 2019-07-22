@@ -13,7 +13,10 @@
 <jsp:include page="fragments/bodyHeader.jsp"/>
 <section>
     <hr>
-    <h2>${action == 'create' ? 'Create meal' : 'Edit meal'}</h2>
+    <c:choose>
+        <c:when test="${meal.isNew()}"><h2><spring:message code="meal.create"/></h2></c:when>
+        <c:otherwise><h2><spring:message code="meal.edit"/></h2></c:otherwise>
+    </c:choose>
     <jsp:useBean id="meal" type="ru.javawebinar.topjava.model.Meal" scope="request"/>
     <form method="post" action="meals">
         <input type="hidden" name="id" value="${meal.id}">
