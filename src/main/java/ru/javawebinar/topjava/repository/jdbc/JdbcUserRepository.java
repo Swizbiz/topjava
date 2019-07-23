@@ -8,7 +8,6 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.namedparam.BeanPropertySqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
-import org.springframework.jdbc.support.rowset.SqlRowSet;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 import ru.javawebinar.topjava.model.Role;
@@ -82,38 +81,39 @@ public class JdbcUserRepository implements UserRepository {
     @Override
     public User get(int id) {
         List<User> users = jdbcTemplate.query("SELECT * FROM users WHERE id=?", ROW_MAPPER, id);
-        User user = DataAccessUtils.singleResult(users);
-        if (user != null) {
-            List<Role> roles = jdbcTemplate.queryForList("SELECT role FROM user_roles WHERE user_id=?", new Object[]{id}, Role.class);
-            user.setRoles(roles);
-        }
-        return user;
+        return setRolesToUser(users);
     }
 
     @Override
     public User getByEmail(String email) {
 //        return jdbcTemplate.queryForObject("SELECT * FROM users WHERE email=?", ROW_MAPPER, email);
         List<User> users = jdbcTemplate.query("SELECT * FROM users WHERE email=?", ROW_MAPPER, email);
+        return setRolesToUser(users);
+    }
+
+    @Override
+    public List<User> getAll() {
+        List<User> users = jdbcTemplate.query("SELECT * FROM users ORDER BY name, email", ROW_MAPPER);
+        Map<Integer, Set<Role>> roles = jdbcTemplate.query("SELECT * FROM user_roles", rs -> {
+            Map<Integer, Set<Role>> roles1 = new HashMap<>();
+            while (rs.next()) {
+                int user_id = rs.getInt("user_id");
+                Role role = Role.valueOf(rs.getString("role"));
+                roles1.putIfAbsent(user_id, new HashSet<>());
+                roles1.get(user_id).add(role);
+            }
+            return roles1;
+        });
+        users.forEach(user -> user.setRoles(roles.getOrDefault(user.getId(), Collections.emptySet())));
+        return users;
+    }
+
+    private User setRolesToUser(List<User> users) {
         User user = DataAccessUtils.singleResult(users);
         if (user != null) {
             List<Role> roles = jdbcTemplate.queryForList("SELECT role FROM user_roles WHERE user_id=?", new Object[]{user.getId()}, Role.class);
             user.setRoles(roles);
         }
         return user;
-    }
-
-    @Override
-    public List<User> getAll() {
-        List<User> users = jdbcTemplate.query("SELECT * FROM users ORDER BY name, email", ROW_MAPPER);
-        SqlRowSet sqlRowSetRoles = jdbcTemplate.queryForRowSet("SELECT * FROM user_roles");
-        Map<Integer, Set<Role>> roles = new HashMap<>();
-        while (sqlRowSetRoles.next()) {
-            int id = sqlRowSetRoles.getInt("user_id");
-            Role role = Role.valueOf(sqlRowSetRoles.getString("role"));
-            roles.putIfAbsent(id, new HashSet<>());
-            roles.get(id).add(role);
-        }
-        users.forEach(user -> user.setRoles(roles.getOrDefault(user.getId(), Collections.emptySet())));
-        return users;
     }
 }

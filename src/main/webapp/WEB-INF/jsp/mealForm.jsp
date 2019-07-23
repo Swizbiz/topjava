@@ -6,17 +6,13 @@
 <html>
 <head>
     <title><spring:message code="meal.title"/></title>
-    <%--<link rel="stylesheet" href="css/style.css">--%>
 </head>
 <jsp:include page="fragments/headTag.jsp"/>
 <body>
 <jsp:include page="fragments/bodyHeader.jsp"/>
 <section>
     <hr>
-    <c:choose>
-        <c:when test="${meal.isNew()}"><h2><spring:message code="meal.create"/></h2></c:when>
-        <c:otherwise><h2><spring:message code="meal.edit"/></h2></c:otherwise>
-    </c:choose>
+    <h2><spring:message code="${meal.isNew() ? 'meal.create' : 'meal.edit'}"/></h2>
     <jsp:useBean id="meal" type="ru.javawebinar.topjava.model.Meal" scope="request"/>
     <form method="post" action="meals">
         <input type="hidden" name="id" value="${meal.id}">
