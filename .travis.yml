@@ -1,6 +1,8 @@
 # https://docs.travis-ci.com/user/languages/java/
 language: java
 jdk: openjdk11
+services:
+  - postgresql
 
 #https://dzone.com/articles/travis-ci-tutorial-java-projects
 cache:
