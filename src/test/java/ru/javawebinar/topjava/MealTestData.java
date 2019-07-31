@@ -62,7 +62,7 @@ public class MealTestData {
     }
 
     public static void assertMatchMealTo(Iterable<MealTo> actual, Iterable<MealTo> expected) {
-        assertThat(actual).usingElementComparatorIgnoringFields("user").isEqualTo(expected);
+        assertThat(actual).isEqualTo(expected);
     }
 
     public static ResultMatcher contentJson(Collection<MealTo> expected) {
