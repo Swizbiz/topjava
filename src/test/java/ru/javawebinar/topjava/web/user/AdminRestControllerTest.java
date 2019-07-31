@@ -5,7 +5,6 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.ResultActions;
 import ru.javawebinar.topjava.model.Role;
 import ru.javawebinar.topjava.model.User;
-import ru.javawebinar.topjava.web.AbstractControllerTest;
 import ru.javawebinar.topjava.web.json.JsonUtil;
 
 import java.util.Collections;
@@ -17,7 +16,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static ru.javawebinar.topjava.TestUtil.readFromJson;
 import static ru.javawebinar.topjava.UserTestData.*;
 
-class AdminRestControllerTest extends AbstractControllerTest {
+class AdminRestControllerTest extends AbstractUserControllerTest {
 
     private static final String REST_URL = AdminRestController.REST_URL + '/';
 
@@ -44,7 +43,7 @@ class AdminRestControllerTest extends AbstractControllerTest {
         mockMvc.perform(delete(REST_URL + USER_ID))
                 .andDo(print())
                 .andExpect(status().isNoContent());
-        assertMatch(userService.getAll(), ADMIN);
+        assertMatch(service.getAll(), ADMIN);
     }
 
     @Test
@@ -57,7 +56,7 @@ class AdminRestControllerTest extends AbstractControllerTest {
                 .content(JsonUtil.writeValue(updated)))
                 .andExpect(status().isNoContent());
 
-        assertMatch(userService.get(USER_ID), updated);
+        assertMatch(service.get(USER_ID), updated);
     }
 
     @Test
@@ -72,7 +71,7 @@ class AdminRestControllerTest extends AbstractControllerTest {
         expected.setId(returned.getId());
 
         assertMatch(returned, expected);
-        assertMatch(userService.getAll(), ADMIN, expected, USER);
+        assertMatch(service.getAll(), ADMIN, expected, USER);
     }
 
     @Test

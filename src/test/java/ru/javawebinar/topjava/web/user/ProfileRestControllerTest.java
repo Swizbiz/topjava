@@ -4,7 +4,6 @@ import org.junit.jupiter.api.Test;
 import org.springframework.http.MediaType;
 import ru.javawebinar.topjava.model.Role;
 import ru.javawebinar.topjava.model.User;
-import ru.javawebinar.topjava.web.AbstractControllerTest;
 import ru.javawebinar.topjava.web.json.JsonUtil;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
@@ -14,7 +13,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static ru.javawebinar.topjava.UserTestData.*;
 import static ru.javawebinar.topjava.web.user.ProfileRestController.REST_URL;
 
-class ProfileRestControllerTest extends AbstractControllerTest {
+class ProfileRestControllerTest extends AbstractUserControllerTest {
 
     @Test
     void testGet() throws Exception {
@@ -28,7 +27,7 @@ class ProfileRestControllerTest extends AbstractControllerTest {
     void testDelete() throws Exception {
         mockMvc.perform(delete(REST_URL))
                 .andExpect(status().isNoContent());
-        assertMatch(userService.getAll(), ADMIN);
+        assertMatch(service.getAll(), ADMIN);
     }
 
     @Test
@@ -39,6 +38,6 @@ class ProfileRestControllerTest extends AbstractControllerTest {
                 .andDo(print())
                 .andExpect(status().isNoContent());
 
-        assertMatch(userService.getByEmail("newemail@ya.ru"), updated);
+        assertMatch(service.getByEmail("newemail@ya.ru"), updated);
     }
 }
