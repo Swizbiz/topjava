@@ -2,10 +2,10 @@ let context, form;
 
 function makeEditable(ctx) {
     context = ctx;
-    form = $('#detailsForm');
+    form = $("#detailsForm");
     $(".delete").click(function () {
-        if (confirm('Are you sure?')) {
-            deleteRow($(this).attr("id"));
+        if (confirm("Are you sure?")) {
+            deleteRow($(this).data().id, $(this).data().needFilter);
         }
     });
 
@@ -22,30 +22,34 @@ function add() {
     $("#editRow").modal();
 }
 
-function deleteRow(id) {
+function deleteRow(id, needFilter) {
     $.ajax({
         url: context.ajaxUrl + id,
         type: "DELETE"
     }).done(function () {
-        updateTable();
+        needFilter ? filter() : updateTable();
         successNoty("Deleted");
     });
 }
 
+function updateTableWithData(data) {
+    context.datatableApi.clear().rows.add(data).draw();
+}
+
 function updateTable() {
     $.get(context.ajaxUrl, function (data) {
-        context.datatableApi.clear().rows.add(data).draw();
+        updateTableWithData(data);
     });
 }
 
-function save() {
+function save(needFilter) {
     $.ajax({
         type: "POST",
         url: context.ajaxUrl,
         data: form.serialize()
     }).done(function () {
         $("#editRow").modal("hide");
-        updateTable();
+        needFilter ? filter() : updateTable();
         successNoty("Saved");
     });
 }
@@ -63,7 +67,7 @@ function successNoty(text) {
     closeNoty();
     new Noty({
         text: "<span class='fa fa-lg fa-check'></span> &nbsp;" + text,
-        type: 'success',
+        type: "success",
         layout: "bottomRight",
         timeout: 1000
     }).show();
