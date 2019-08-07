@@ -61,9 +61,7 @@ $(function () {
                 $(checkbox.parentNode.parentNode).css("color", color);
                 // updateTable();
                 successNoty(enabled ? "Enable" : "Disable");
-            } else {
-                checkbox.checked = !enabled;
             }
-        });
+        }).error(checkbox.checked = !enabled);
     });
 });
