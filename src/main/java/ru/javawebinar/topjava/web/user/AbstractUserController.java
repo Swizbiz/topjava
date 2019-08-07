@@ -44,8 +44,8 @@ public abstract class AbstractUserController {
         service.update(user);
     }
 
-    public void changeEnable(int id, boolean enable) {
+    public boolean changeEnable(int id, boolean enable) {
         log.info("change enable on {} by user id={}", enable, id);
-        service.changeEnable(id, enable);
+        return service.changeEnable(id, enable);
     }
 }

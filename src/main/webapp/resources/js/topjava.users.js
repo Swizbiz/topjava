@@ -41,16 +41,29 @@ $(function () {
     );
 });
 
+function updateTable() {
+    $.get(context.ajaxUrl, function (data) {
+        updateTableWithData(data);
+    });
+}
+
 $(function () {
-    $("input[type=checkbox]").on("change", function () {
-        let enabled = $(this).is(":checked");
+    $("input[type=checkbox]").on("click", function () {
+        let checkbox = this;
+        let enabled = checkbox.checked;
         $.ajax({
             url: context.ajaxUrl + $(this).data().id,
             method: "POST",
             data: {enable: enabled}
-        }).done(function () {
-            updateTable();
-            successNoty(enabled ? "Enable" : "Disable");
+        }).done(function (result) {
+            if (result) {
+                let color = enabled ? "black" : "darkgray";
+                $(checkbox.parentNode.parentNode).css("color", color);
+                // updateTable();
+                successNoty(enabled ? "Enable" : "Disable");
+            } else {
+                checkbox.checked = !enabled;
+            }
         });
     });
 });

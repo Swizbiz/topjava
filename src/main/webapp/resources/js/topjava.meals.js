@@ -1,5 +1,3 @@
-let filterForm = $('#filter');
-
 $(function () {
     makeEditable({
             ajaxUrl: "ajax/meals/",
@@ -36,17 +34,18 @@ $(function () {
     );
 });
 
-function filter() {
+function updateTable() {
     $.ajax({
        type: "GET",
        url: context.ajaxUrl + "filter",
-        data: filterForm.serialize()
+       data: $('#filter').serialize()
    }).done(function (data) {
         updateTableWithData(data);
     });
 }
 
-function resetFilter() {
-    filterForm.find(":input").val("");
-    updateTable();
+function cleanFilter() {
+    $.get(context.ajaxUrl, function (data) {
+        updateTableWithData(data);
+    });
 }

@@ -39,9 +39,8 @@ public class AdminUIController extends AbstractUserController {
         }
     }
 
-    @PostMapping("/{id}")
-    @ResponseStatus(value = HttpStatus.NO_CONTENT)
-    public void changeEnable(@PathVariable("id") int id, @RequestParam("enable") Boolean enable) {
-        super.changeEnable(id, enable);
+    @PostMapping(value = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
+    public boolean changeEnable(@PathVariable("id") int id, @RequestParam("enable") boolean enable) {
+        return super.changeEnable(id, enable);
     }
 }

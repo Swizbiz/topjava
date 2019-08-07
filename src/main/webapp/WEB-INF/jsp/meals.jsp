@@ -33,11 +33,11 @@
             </div>
         </div>
         <div class="modal-footer">
-            <a class="btn btn-outline-primary" onclick="resetFilter()">
+            <button type="reset" class="btn btn-outline-primary" onclick="cleanFilter()">
                 <span class="fa fa-close"></span>
                 <spring:message code="common.cancel"/>
-            </a>
-            <a class="btn btn-outline-success" onclick="filter()">
+            </button>
+            <a class="btn btn-outline-success" onclick="updateTable()">
                 <span class="fa fa-filter"></span>
                 <spring:message code="meal.filter"/>
             </a>
@@ -72,7 +72,7 @@
                     <td>${meal.description}</td>
                     <td>${meal.calories}</td>
                     <td><a class="update" data-id="${meal.id}"><span class="fa fa-pencil"></span></a></td>
-                    <td><a class="delete" data-need-filter="true" data-id="${meal.id}"><span class="fa fa-remove"></span></a></td>
+                    <td><a class="delete" data-id="${meal.id}"><span class="fa fa-remove"></span></a></td>
                 </tr>
             </c:forEach>
         </table>
@@ -115,7 +115,7 @@
                     <span class="fa fa-close"></span>
                     <spring:message code="common.cancel"/>
                 </button>
-                <button type="button" class="btn btn-primary" onclick="save(true)">
+                <button type="button" class="btn btn-primary" onclick="save()">
                     <span class="fa fa-check"></span>
                     <spring:message code="common.save"/>
                 </button>
