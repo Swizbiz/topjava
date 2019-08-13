@@ -14,6 +14,7 @@ function makeEditable(ctx) {
 function add() {
     $("#modalTitle").html(i18n["addTitle"]);
     form.find(":input").val("");
+    $('#dateTime').datetimepicker();
     $("#editRow").modal();
 }
 
