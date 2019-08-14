@@ -14,7 +14,6 @@ function makeEditable(ctx) {
 function add() {
     $("#modalTitle").html(i18n["addTitle"]);
     form.find(":input").val("");
-    $('#dateTime').datetimepicker();
     $("#editRow").modal();
 }
 
@@ -22,6 +21,9 @@ function updateRow(id) {
     $("#modalTitle").html(i18n["editTitle"]);
     $.get(context.ajaxUrl + id, function (data) {
         $.each(data, function (key, value) {
+            if (key === "dateTime") {
+                value = value.replace("-", "/").replace("-", "/").replace("T", " ").substring(0, 16);
+            }
             form.find("input[name='" + key + "']").val(value);
         });
         $('#editRow').modal();
